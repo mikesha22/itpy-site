@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
-import { SkeletonPreview } from "./_sites-preview/SkeletonPreview";
+import HomeClient from "./HomeClient";
 
 export const metadata: Metadata = {
-  title: "Your site is taking shape",
+  title: "ITPY — информатика, которую понимаешь",
   description:
-    "Your first version will appear here automatically when it’s ready.",
-  other: {
-    "codex-preview": "development",
-  },
+    "Онлайн-подготовка к ЕГЭ и ОГЭ по информатике с понятной теорией, практикой и поддержкой преподавателя.",
 };
 
 export default function Home() {
-  return <SkeletonPreview />;
+  return <HomeClient />;
 }
