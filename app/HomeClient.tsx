@@ -93,14 +93,6 @@ const faqs = [
     q: "Я запоминаю шаблоны, но всё равно не понимаю код. Что делать?",
     a: "Не зубрить ещё больше. Я разбираю, что делает каждая часть программы и почему решение работает — тогда изменение условия уже не ломает всю задачу.",
   },
-  {
-    q: "Что делать, если у меня нестандартный график или другой часовой пояс?",
-    a: "Расскажите об этом в заявке. Я сверю ваш график со своим расписанием и предложу только те варианты, которые действительно подойдут.",
-  },
-  {
-    q: "У меня другой вопрос. Куда написать?",
-    a: "Напишите мне в Telegram или во ВКонтакте. Ссылки на мои официальные страницы есть внизу сайта — отвечу по существу.",
-  },
 ];
 
 export default function HomeClient() {
@@ -375,8 +367,8 @@ export default function HomeClient() {
           <div className="section-heading">
             <p className="section-kicker">Обо мне</p>
             <h2>
-              Один преподаватель.
-              <br />Личная ответственность
+              Занятия
+              <br />веду сам
             </h2>
           </div>
           <p>
@@ -494,9 +486,8 @@ export default function HomeClient() {
           <div className="section-heading">
             <p className="section-kicker">Результаты</p>
             <h2>
-              Прогресс видно
-              <br />
-              невооружённым глазом
+              Отзывы учеников
+              <br />и реальные баллы
             </h2>
           </div>
           <div className="results-caption">
@@ -602,14 +593,6 @@ export default function HomeClient() {
           </div>
         </div>
 
-        <figure className="lesson-rules-card">
-          <img
-            src="/media/lesson-rules.png"
-            alt="Правила проведения занятий ITPY и Илья Андрианов с ноутбуком"
-            width={2048}
-            height={1536}
-          />
-        </figure>
       </section>
 
       <section className="pricing-section section" id="pricing">
@@ -696,18 +679,102 @@ export default function HomeClient() {
       <section className="trial-section section" id="trial">
         <div className="trial-intro">
           <span className="trial-sticker">это бесплатно</span>
-          <p className="section-kicker">Заявка на знакомство</p>
+          <p className="section-kicker">Связаться со мной</p>
           <h2>
-            Давай знакомиться
+            Обсудить подготовку
             <span>↘</span>
           </h2>
           <p>
-            Выберите удобный вариант. Я лично уточню детали, отвечу на вопросы
-            и предложу следующий шаг.
+            Оставьте имя и удобный контакт. Я лично отвечу, уточню задачу и
+            предложу подходящий вариант занятий.
           </p>
         </div>
 
-        <form className="trial-form" onSubmit={submitTrial}>
+        <form className="simple-contact-form" onSubmit={submitTrial}>
+          {trialStep === 4 ? (
+            <div className="simple-contact-success" role="status">
+              <span>✓</span>
+              <div>
+                <h3>Заявка отправлена</h3>
+                <p>Я лично свяжусь с вами и спокойно отвечу на вопросы.</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="simple-contact-group">
+                <span className="simple-contact-label">Цель подготовки</span>
+                <div className="simple-choice-row">
+                  {programs.map((item) => (
+                    <button
+                      type="button"
+                      key={item.id}
+                      className={program === item.id ? "active" : ""}
+                      onClick={() => setProgram(item.id)}
+                    >
+                      {item.id}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="simple-contact-group">
+                <span className="simple-contact-label">Формат</span>
+                <div className="simple-choice-row simple-choice-row-format">
+                  {(["Мини-группа", "Индивидуально"] as StudyFormat[]).map(
+                    (item) => (
+                      <button
+                        type="button"
+                        key={item}
+                        className={studyFormat === item ? "active" : ""}
+                        onClick={() => setStudyFormat(item)}
+                      >
+                        {item}
+                      </button>
+                    ),
+                  )}
+                </div>
+              </div>
+
+              <div className="simple-contact-fields">
+                <label className="form-field">
+                  <span>Как вас зовут?</span>
+                  <input
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    placeholder="Имя"
+                    autoComplete="name"
+                    maxLength={80}
+                  />
+                </label>
+                <label className="form-field">
+                  <span>Телефон или Telegram</span>
+                  <input
+                    value={phone}
+                    onChange={(event) => setPhone(event.target.value)}
+                    placeholder="+7 999 000-00-00"
+                    autoComplete="tel"
+                    maxLength={80}
+                  />
+                </label>
+              </div>
+
+              {submitError && <p className="form-error">{submitError}</p>}
+              <button
+                className="simple-contact-submit"
+                type="submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Отправляю..." : "Обсудить подготовку"}
+                {!isSubmitting && <span>→</span>}
+              </button>
+              <p className="privacy-note">
+                Контакт нужен только для ответа по заявке.
+              </p>
+            </>
+          )}
+        </form>
+
+        <form className="trial-form trial-form-legacy" onSubmit={submitTrial}>
           <div className="trial-progress" aria-label="Шаги записи">
             {["Программа", "Время", "Контакты"].map((label, index) => (
               <div
@@ -876,7 +943,7 @@ export default function HomeClient() {
             <h2>
               Часто спрашивают.
               <br />
-              Отвечаем по делу
+              Отвечаю по делу
             </h2>
           </div>
           <div className="faq-symbol">?</div>
@@ -910,7 +977,7 @@ export default function HomeClient() {
           <div>
             <span className="footer-logo-crop">
               <img
-                src="/itpy-logo.png"
+                src="/itpy-logo-original.png"
                 alt="ITPY"
                 width={2048}
                 height={2048}
@@ -928,7 +995,6 @@ export default function HomeClient() {
             <a href="#learning">Как учим</a>
             <a href="#courses">Направления</a>
             <a href="#about">Обо мне</a>
-            <a href="#pricing">Стоимость</a>
           </div>
           <div>
             <span>Связь</span>
