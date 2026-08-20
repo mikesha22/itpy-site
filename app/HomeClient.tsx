@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 
 type Program = "ЕГЭ" | "ОГЭ" | "Python";
 type StudyFormat = "Мини-группа" | "Индивидуально";
@@ -76,6 +76,12 @@ const teacherPrinciples = [
   "Адаптирую темп под ученика",
 ];
 
+const reviewImages = Array.from({ length: 18 }, (_, index) => {
+  const number = String(index + 1).padStart(2, "0");
+  const extension = index === 17 ? "jpg" : "png";
+  return `/reviews/review-${number}.${extension}`;
+});
+
 const faqs = [
   {
     q: "Я не умею программировать. Мне вообще сюда можно?",
@@ -106,6 +112,8 @@ export default function HomeClient() {
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const reviewsRef = useRef<HTMLDivElement>(null);
+  const [selectedReview, setSelectedReview] = useState<number | null>(null);
 
   async function submitTrial(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -156,10 +164,10 @@ export default function HomeClient() {
         <header className="site-header">
           <a className="header-logo" href="#top" aria-label="ITPY — на главную">
             <img
-              src="/itpy-logo-original.png"
+              src="/itpy-logo-2026.png"
               alt="ITPY"
-              width={2048}
-              height={2048}
+              width={1024}
+              height={1024}
             />
           </a>
 
@@ -176,6 +184,7 @@ export default function HomeClient() {
             href="#contacts"
             aria-label="Соцсети ITPY"
           >
+            <span>Все ссылки ↓</span>
             <img
               src="/itpy-socials.png"
               alt="YouTube, Telegram, VK — informatika_kege_itpy"
@@ -204,7 +213,7 @@ export default function HomeClient() {
             </p>
 
             <div className="hero-actions">
-              <a className="primary-cta" href="#trial">
+              <a className="primary-cta" href="#contacts">
                 Обсудить подготовку
                 <span className="button-arrow" aria-hidden="true">
                   →
@@ -259,6 +268,27 @@ export default function HomeClient() {
               <br />от первого урока до экзамена
             </p>
           </div>
+          <div>
+            <span className="feature-number">04</span>
+            <p>
+              <strong>Личный маршрут</strong>
+              <br />темы и темп под конкретную цель
+            </p>
+          </div>
+          <div>
+            <span className="feature-number">05</span>
+            <p>
+              <strong>Записи и конспекты</strong>
+              <br />можно вернуться к теме в любой момент
+            </p>
+          </div>
+          <div>
+            <span className="feature-number">06</span>
+            <p>
+              <strong>Регулярные пробники</strong>
+              <br />видим прогресс и разбираем ошибки
+            </p>
+          </div>
         </div>
       </section>
 
@@ -278,7 +308,7 @@ export default function HomeClient() {
 
         <div className="learning-grid">
           {learningSteps.map((step) => (
-            <article className="learning-card" key={step.number}>
+            <article className="learning-card" key={step.number} tabIndex={0}>
               <div className="learning-card-top">
                 <span>{step.number}</span>
                 <span className="learning-tag">{step.tag}</span>
@@ -351,7 +381,7 @@ export default function HomeClient() {
                 ))}
               </div>
               <a
-                href="#trial"
+                href="#contacts"
                 className="course-button"
                 onClick={() => chooseProgram(course.id)}
               >
@@ -519,31 +549,165 @@ export default function HomeClient() {
           </article>
         </div>
 
-        <div className="real-reviews">
-          <figure className="review-image-card review-image-overview">
-            <img
-              src="/media/reviews-overview.png"
-              alt="Рейтинг 5.0 и подборка отзывов учеников Ильи с результатами 85, 85, 93 и 88 баллов"
-              width={2048}
-              height={1536}
-            />
-          </figure>
-          <figure className="review-image-card">
-            <img
-              src="/media/review-sergey.png"
-              alt="Отзыв Сергея о подготовке к ЕГЭ по информатике, результат 98 баллов"
-              width={2048}
-              height={1536}
-            />
-          </figure>
-          <figure className="review-image-card">
-            <img
-              src="/media/review-darya.png"
-              alt="Отзыв Дарьи о подготовке к ЕГЭ по информатике, результаты 100 и 95 баллов"
-              width={2048}
-              height={1536}
-            />
-          </figure>
+        <div className="review-carousel" aria-label="Отзывы учеников">
+          <div className="review-carousel-toolbar">
+            <div>
+              <strong>{reviewImages.length} отзывов</strong>
+              <span>крути колесо или тяни ленту →</span>
+            </div>
+            <div className="review-carousel-buttons">
+              <button
+                type="button"
+                aria-label="Предыдущий отзыв"
+                onClick={() =>
+                  reviewsRef.current?.scrollBy({ left: -420, behavior: "smooth" })
+                }
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                aria-label="Следующий отзыв"
+                onClick={() =>
+                  reviewsRef.current?.scrollBy({ left: 420, behavior: "smooth" })
+                }
+              >
+                →
+              </button>
+            </div>
+          </div>
+
+          <div
+            className="review-strip"
+            ref={reviewsRef}
+            tabIndex={0}
+            onWheel={(event) => {
+              if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+                const strip = event.currentTarget;
+                const maxScroll = strip.scrollWidth - strip.clientWidth;
+                const canMoveLeft = event.deltaY < 0 && strip.scrollLeft > 0;
+                const canMoveRight =
+                  event.deltaY > 0 && strip.scrollLeft < maxScroll;
+
+                if (canMoveLeft || canMoveRight) {
+                  event.preventDefault();
+                  strip.scrollLeft += event.deltaY;
+                }
+              }
+            }}
+          >
+            {reviewImages.map((src, index) => (
+              <button
+                className="review-strip-card"
+                type="button"
+                key={src}
+                aria-label={`Открыть отзыв ${index + 1}`}
+                onClick={() => setSelectedReview(index)}
+              >
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <img
+                  src={src}
+                  alt={`Отзыв ученика ${index + 1}`}
+                  width={index < 2 ? 1536 : index === 17 ? 1280 : 1448}
+                  height={index < 2 ? 1024 : index === 17 ? 960 : 1086}
+                  loading={index > 4 ? "lazy" : "eager"}
+                />
+              </button>
+            ))}
+          </div>
+
+          {selectedReview !== null && (
+            <div
+              className="review-lightbox"
+              role="presentation"
+              onClick={() => setSelectedReview(null)}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") setSelectedReview(null);
+                if (event.key === "ArrowLeft") {
+                  setSelectedReview((current) =>
+                    current === null || current === 0
+                      ? reviewImages.length - 1
+                      : current - 1,
+                  );
+                }
+                if (event.key === "ArrowRight") {
+                  setSelectedReview((current) =>
+                    current === null || current === reviewImages.length - 1
+                      ? 0
+                      : current + 1,
+                  );
+                }
+              }}
+            >
+              <div
+                className="review-lightbox-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-label={`Отзыв ${selectedReview + 1} из ${reviewImages.length}`}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="review-lightbox-topbar">
+                  <span>
+                    {String(selectedReview + 1).padStart(2, "0")} / {reviewImages.length}
+                  </span>
+                  <button
+                    type="button"
+                    autoFocus
+                    aria-label="Закрыть отзыв"
+                    onClick={() => setSelectedReview(null)}
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="review-lightbox-content">
+                  <button
+                    type="button"
+                    aria-label="Предыдущий отзыв"
+                    onClick={() =>
+                      setSelectedReview((current) =>
+                        current === null || current === 0
+                          ? reviewImages.length - 1
+                          : current - 1,
+                      )
+                    }
+                  >
+                    ←
+                  </button>
+                  <img
+                    src={reviewImages[selectedReview]}
+                    alt={`Отзыв ученика ${selectedReview + 1}`}
+                    width={
+                      selectedReview < 2
+                        ? 1536
+                        : selectedReview === 17
+                          ? 1280
+                          : 1448
+                    }
+                    height={
+                      selectedReview < 2
+                        ? 1024
+                        : selectedReview === 17
+                          ? 960
+                          : 1086
+                    }
+                  />
+                  <button
+                    type="button"
+                    aria-label="Следующий отзыв"
+                    onClick={() =>
+                      setSelectedReview((current) =>
+                        current === null || current === reviewImages.length - 1
+                          ? 0
+                          : current + 1,
+                      )
+                    }
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -973,44 +1137,36 @@ export default function HomeClient() {
       </section>
 
       <footer className="site-footer" id="contacts">
-        <div className="footer-top">
+        <div className="footer-link-hub">
           <div>
-            <span className="footer-logo-crop">
-              <img
-                src="/itpy-logo-original.png"
-                alt="ITPY"
-                width={2048}
-                height={2048}
-              />
-            </span>
-            <p>Информатика, которую ты понимаешь.</p>
+            <span className="footer-hub-kicker">Ссылки ITPY</span>
+            <h2>Все площадки<br />в одном месте</h2>
+            <p>
+              Здесь появятся прямые ссылки на материалы, видео, соцсети и
+              полезные инструменты.
+            </p>
           </div>
-          <a className="footer-cta" href="#trial">
-            Обсудить подготовку <span>↗</span>
-          </a>
-        </div>
-        <div className="footer-links">
-          <div>
-            <span>Навигация</span>
-            <a href="#learning">Как учим</a>
-            <a href="#courses">Направления</a>
-            <a href="#about">Обо мне</a>
-          </div>
-          <div>
-            <span>Связь</span>
-            <p>Мои официальные страницы и контакты</p>
-            <img
-              className="socials-plaque"
-              src="/itpy-socials.png"
-              alt="YouTube, Telegram, VK — informatika_kege_itpy"
-              width={1280}
-              height={217}
-            />
+          <div className="footer-link-grid" aria-label="Будущие ссылки ITPY">
+            {[
+              ["Telegram", "канал и материалы"],
+              ["YouTube", "разборы заданий"],
+              ["VK", "новости проекта"],
+              ["Stepik", "авторские курсы"],
+              ["Полезные боты", "практика и проверка"],
+              ["Связаться", "личные сообщения"],
+            ].map(([title, caption], index) => (
+              <span className="footer-link-placeholder" key={title}>
+                <b>{String(index + 1).padStart(2, "0")}</b>
+                <strong>{title}</strong>
+                <small>{caption}</small>
+                <i>↗</i>
+              </span>
+            ))}
           </div>
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} ITPY</span>
-          <span>Сделано с любовью к информатике {"</>"}</span>
+          <a href="#top">Наверх ↑</a>
         </div>
       </footer>
     </main>
