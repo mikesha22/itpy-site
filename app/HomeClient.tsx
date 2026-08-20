@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 type Program = "ЕГЭ" | "ОГЭ" | "Python";
 type StudyFormat = "Мини-группа" | "Индивидуально";
@@ -113,7 +113,48 @@ export default function HomeClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const reviewsRef = useRef<HTMLDivElement>(null);
+  const reviewWheelTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [reviewPosition, setReviewPosition] = useState(0);
   const [selectedReview, setSelectedReview] = useState<number | null>(null);
+
+  useEffect(() => {
+    const orbit = reviewsRef.current;
+    if (!orbit) return;
+
+    const moveReviewsWithWheel = (event: WheelEvent) => {
+      const rawDelta =
+        Math.abs(event.deltaY) >= Math.abs(event.deltaX)
+          ? event.deltaY
+          : event.deltaX;
+      if (!rawDelta) return;
+
+      event.preventDefault();
+
+      const delta =
+        event.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? rawDelta * 36
+          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+            ? rawDelta * 420
+            : rawDelta;
+      const movement =
+        Math.abs(delta) >= 55
+          ? Math.sign(delta) * Math.min(1, Math.abs(delta) / 90)
+          : delta / 110;
+
+      setReviewPosition((current) => current + movement);
+
+      if (reviewWheelTimer.current) clearTimeout(reviewWheelTimer.current);
+      reviewWheelTimer.current = setTimeout(() => {
+        setReviewPosition((current) => Math.round(current));
+      }, 130);
+    };
+
+    orbit.addEventListener("wheel", moveReviewsWithWheel, { passive: false });
+    return () => {
+      orbit.removeEventListener("wheel", moveReviewsWithWheel);
+      if (reviewWheelTimer.current) clearTimeout(reviewWheelTimer.current);
+    };
+  }, []);
 
   async function submitTrial(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -157,6 +198,10 @@ export default function HomeClient() {
   function chooseProgram(nextProgram: Program) {
     setProgram(nextProgram);
   }
+
+  const activeReview =
+    ((Math.round(reviewPosition) % reviewImages.length) + reviewImages.length) %
+    reviewImages.length;
 
   return (
     <main>
@@ -552,25 +597,23 @@ export default function HomeClient() {
         <div className="review-carousel" aria-label="Отзывы учеников">
           <div className="review-carousel-toolbar">
             <div>
-              <strong>{reviewImages.length} отзывов</strong>
-              <span>крути колесо или тяни ленту →</span>
+              <strong>
+                {String(activeReview + 1).padStart(2, "0")} / {reviewImages.length}
+              </strong>
+              <span>крути колесо — лента бесконечная</span>
             </div>
             <div className="review-carousel-buttons">
               <button
                 type="button"
                 aria-label="Предыдущий отзыв"
-                onClick={() =>
-                  reviewsRef.current?.scrollBy({ left: -420, behavior: "smooth" })
-                }
+                onClick={() => setReviewPosition((current) => Math.round(current) - 1)}
               >
                 ←
               </button>
               <button
                 type="button"
                 aria-label="Следующий отзыв"
-                onClick={() =>
-                  reviewsRef.current?.scrollBy({ left: 420, behavior: "smooth" })
-                }
+                onClick={() => setReviewPosition((current) => Math.round(current) + 1)}
               >
                 →
               </button>
@@ -578,42 +621,65 @@ export default function HomeClient() {
           </div>
 
           <div
-            className="review-strip"
+            className="review-orbit"
             ref={reviewsRef}
             tabIndex={0}
-            onWheel={(event) => {
-              if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-                const strip = event.currentTarget;
-                const maxScroll = strip.scrollWidth - strip.clientWidth;
-                const canMoveLeft = event.deltaY < 0 && strip.scrollLeft > 0;
-                const canMoveRight =
-                  event.deltaY > 0 && strip.scrollLeft < maxScroll;
-
-                if (canMoveLeft || canMoveRight) {
-                  event.preventDefault();
-                  strip.scrollLeft += event.deltaY;
-                }
+            onKeyDown={(event) => {
+              if (event.key === "ArrowLeft") {
+                event.preventDefault();
+                setReviewPosition((current) => Math.round(current) - 1);
+              }
+              if (event.key === "ArrowRight") {
+                event.preventDefault();
+                setReviewPosition((current) => Math.round(current) + 1);
               }
             }}
           >
-            {reviewImages.map((src, index) => (
-              <button
-                className="review-strip-card"
-                type="button"
-                key={src}
-                aria-label={`Открыть отзыв ${index + 1}`}
-                onClick={() => setSelectedReview(index)}
-              >
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <img
-                  src={src}
-                  alt={`Отзыв ученика ${index + 1}`}
-                  width={index < 2 ? 1536 : index === 17 ? 1280 : 1448}
-                  height={index < 2 ? 1024 : index === 17 ? 960 : 1086}
-                  loading={index > 4 ? "lazy" : "eager"}
-                />
-              </button>
-            ))}
+            {reviewImages.map((src, index) => {
+              const distance =
+                ((((index - reviewPosition + reviewImages.length / 2) %
+                  reviewImages.length) +
+                  reviewImages.length) %
+                  reviewImages.length) -
+                reviewImages.length / 2;
+
+              const absoluteDistance = Math.abs(distance);
+              const isVisible = absoluteDistance < 4.6;
+              const scale = Math.max(0.68, 1 - absoluteDistance * 0.095);
+              const opacity = isVisible ? Math.max(0.22, 1 - absoluteDistance * 0.19) : 0;
+
+              return (
+                <button
+                  className="review-orbit-card"
+                  type="button"
+                  key={src}
+                  aria-label={`Открыть отзыв ${index + 1}`}
+                  aria-current={absoluteDistance < 0.5 ? "true" : undefined}
+                  onClick={() => setSelectedReview(index)}
+                  style={{
+                    left: `${50 + distance * 18}%`,
+                    top: `${18 + distance * distance * 23}px`,
+                    zIndex: Math.round(100 - absoluteDistance * 10),
+                    opacity,
+                    pointerEvents: isVisible ? "auto" : "none",
+                    visibility: isVisible ? "visible" : "hidden",
+                    transform: `translateX(-50%) rotate(${distance * 4.4}deg) scale(${scale})`,
+                  }}
+                >
+                  <span className="review-card-number">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <img
+                    src={src}
+                    alt={`Отзыв ученика ${index + 1}`}
+                    width={index < 2 ? 1536 : index === 17 ? 1280 : 1448}
+                    height={index < 2 ? 1024 : index === 17 ? 960 : 1086}
+                    loading={absoluteDistance > 3 ? "lazy" : "eager"}
+                  />
+                  <span className="review-card-open">Открыть оригинал ↗</span>
+                </button>
+              );
+            })}
           </div>
 
           {selectedReview !== null && (
