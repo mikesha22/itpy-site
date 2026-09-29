@@ -1,6 +1,8 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
+import SiteHeader from "./SiteHeader";
+import LinkHub from "./LinkHub";
 
 type Program = "ЕГЭ" | "ОГЭ" | "Python";
 type StudyFormat = "Мини-группа" | "Индивидуально";
@@ -45,27 +47,23 @@ const programs: Array<{
 const learningSteps = [
   {
     number: "01",
-    title: "Определяем точку старта",
-    text: "На первой встрече знакомимся, смотрим текущий уровень и ставим понятную цель.",
-    tag: "диагностика",
+    title: "Пробное занятие",
+    text: "Знакомимся, определяем стартовый уровень и намечаем маршрут подготовки.",
   },
   {
     number: "02",
-    title: "Собираем личный маршрут",
-    text: "Раскладываем подготовку по темам и неделям, чтобы двигаться без перегруза.",
-    tag: "план",
+    title: "Осваиваем базу",
+    text: "Разбираем теорию и закрепляем её заданиями из банка ФИПИ.",
   },
   {
     number: "03",
-    title: "Учимся через практику",
-    text: "Короткая теория, живой разбор и задачи — всё сразу закрепляем руками.",
-    tag: "занятия",
+    title: "Решаем сложнее",
+    text: "Переходим к авторским задачам повышенной сложности и разбираем ошибки.",
   },
   {
     number: "04",
-    title: "Следим за прогрессом",
-    text: "Регулярные пробники показывают рост и помогают вовремя усилить слабые темы.",
-    tag: "результат",
+    title: "Готовимся к экзамену",
+    text: "Пишем пробники, отслеживаем прогресс и выходим на экзамен увереннее.",
   },
 ];
 
@@ -113,48 +111,14 @@ export default function HomeClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const reviewsRef = useRef<HTMLDivElement>(null);
-  const reviewWheelTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [reviewPosition, setReviewPosition] = useState(0);
+  const [activeReview, setActiveReview] = useState(0);
   const [selectedReview, setSelectedReview] = useState<number | null>(null);
 
-  useEffect(() => {
-    const orbit = reviewsRef.current;
-    if (!orbit) return;
-
-    const moveReviewsWithWheel = (event: WheelEvent) => {
-      const rawDelta =
-        Math.abs(event.deltaY) >= Math.abs(event.deltaX)
-          ? event.deltaY
-          : event.deltaX;
-      if (!rawDelta) return;
-
-      event.preventDefault();
-
-      const delta =
-        event.deltaMode === WheelEvent.DOM_DELTA_LINE
-          ? rawDelta * 36
-          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
-            ? rawDelta * 420
-            : rawDelta;
-      const movement =
-        Math.abs(delta) >= 55
-          ? Math.sign(delta) * Math.min(1, Math.abs(delta) / 90)
-          : delta / 110;
-
-      setReviewPosition((current) => current + movement);
-
-      if (reviewWheelTimer.current) clearTimeout(reviewWheelTimer.current);
-      reviewWheelTimer.current = setTimeout(() => {
-        setReviewPosition((current) => Math.round(current));
-      }, 130);
-    };
-
-    orbit.addEventListener("wheel", moveReviewsWithWheel, { passive: false });
-    return () => {
-      orbit.removeEventListener("wheel", moveReviewsWithWheel);
-      if (reviewWheelTimer.current) clearTimeout(reviewWheelTimer.current);
-    };
-  }, []);
+  function moveReviews(direction: number) {
+    const track = reviewsRef.current;
+    const card = track?.querySelector<HTMLElement>(".review-orbit-card");
+    track?.scrollBy({ left: direction * ((card?.offsetWidth ?? 310) + 16), behavior: "smooth" });
+  }
 
   async function submitTrial(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -199,45 +163,10 @@ export default function HomeClient() {
     setProgram(nextProgram);
   }
 
-  const activeReview =
-    ((Math.round(reviewPosition) % reviewImages.length) + reviewImages.length) %
-    reviewImages.length;
-
   return (
     <main>
       <section className="hero" id="top">
-        <header className="site-header">
-          <a className="header-logo" href="#top" aria-label="ITPY — на главную">
-            <img
-              src="/itpy-logo-2026.png"
-              alt="ITPY"
-              width={1024}
-              height={1024}
-            />
-          </a>
-
-          <nav className="main-nav" aria-label="Основная навигация">
-            <a href="#learning">Как учим</a>
-            <a href="#courses">Направления</a>
-            <a href="#results">Результаты</a>
-            <a href="#about">Обо мне</a>
-            <a href="#faq">FAQ</a>
-          </nav>
-
-          <a
-            className="header-socials"
-            href="#contacts"
-            aria-label="Соцсети ITPY"
-          >
-            <span>Все ссылки ↓</span>
-            <img
-              src="/itpy-socials.png"
-              alt="YouTube, Telegram, VK — informatika_kege_itpy"
-              width={1280}
-              height={217}
-            />
-          </a>
-        </header>
+        <SiteHeader active="home" />
 
         <div className="hero-grid">
           <div className="hero-copy">
@@ -258,7 +187,7 @@ export default function HomeClient() {
             </p>
 
             <div className="hero-actions">
-              <a className="primary-cta" href="#contacts">
+              <a className="primary-cta" href="#trial">
                 Обсудить подготовку
                 <span className="button-arrow" aria-hidden="true">
                   →
@@ -353,10 +282,9 @@ export default function HomeClient() {
 
         <div className="learning-grid">
           {learningSteps.map((step) => (
-            <article className="learning-card" key={step.number} tabIndex={0}>
+            <article className="learning-card" key={step.number}>
               <div className="learning-card-top">
                 <span>{step.number}</span>
-                <span className="learning-tag">{step.tag}</span>
               </div>
               <h3>{step.title}</h3>
               <p>{step.text}</p>
@@ -394,176 +322,11 @@ export default function HomeClient() {
         </div>
       </section>
 
-      <section className="courses-section section" id="courses">
-        <div className="section-heading">
-          <p className="section-kicker">Направления</p>
-          <h2>
-            Выбери цель.
-            <br />
-            Маршрут соберём вместе
-          </h2>
-        </div>
-
-        <div className="courses-grid">
-          {programs.map((course) => (
-            <article
-              className={"course-card course-" + course.accent}
-              key={course.id}
-            >
-              <div className="course-card-head">
-                <span className="course-code">{course.code}</span>
-                <span className="course-arrow" aria-hidden="true">
-                  ↗
-                </span>
-              </div>
-              <div>
-                <h3>{course.title}</h3>
-                <p>{course.description}</p>
-              </div>
-              <div className="course-tags">
-                {course.topics.map((topic) => (
-                  <span key={topic}>{topic}</span>
-                ))}
-              </div>
-              <a
-                href="#contacts"
-                className="course-button"
-                onClick={() => chooseProgram(course.id)}
-              >
-                Это моя цель <span>→</span>
-              </a>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="team-section section" id="about">
-        <div className="team-heading">
-          <div className="section-heading">
-            <p className="section-kicker">Обо мне</p>
-            <h2>
-              Занятия
-              <br />веду сам
-            </h2>
-          </div>
-          <p>
-            ITPY — мой проект. От первой встречи до экзамена вы общаетесь
-            напрямую со мной: я веду занятия, проверяю работу и вижу прогресс.
-          </p>
-        </div>
-
-        <div className="solo-teacher-card">
-          <div className="solo-photo">
-            <img
-              src="/media/teacher-diploma.png"
-              alt="Илья Андрианов с дипломом бакалавра по информатике и вычислительной технике"
-              width={2048}
-              height={1536}
-            />
-          </div>
-          <div className="solo-teacher-copy">
-            <span className="solo-role">Илья Андрианов · ITPY</span>
-            <h3>ЕГЭ, ОГЭ и Python — лично со мной</h3>
-            <p>
-              У меня профильное высшее образование в IT. Я сам объясняю темы,
-              проверяю решения, вижу прогресс и отвечаю на вопросы — подготовка
-              не рассыпается между разными людьми.
-            </p>
-            <div className="solo-principles">
-              {teacherPrinciples.map((item, index) => (
-                <span key={item}>
-                  <b>{String(index + 1).padStart(2, "0")}</b>
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="expertise-gallery" aria-label="Опыт и проекты Ильи">
-          <figure className="expertise-card expertise-card-wide">
-            <img
-              src="/media/teacher-official.png"
-              alt="Илья Андрианов работает официально как индивидуальный предприниматель"
-              width={2048}
-              height={1536}
-            />
-          </figure>
-          <figure className="expertise-card">
-            <img
-              src="/media/stepik-courses.png"
-              alt="Авторские курсы Ильи Андрианова по Python и подготовке к ЕГЭ на Stepik"
-              width={2048}
-              height={1536}
-            />
-          </figure>
-          <figure className="expertise-card">
-            <img
-              src="/media/video-platforms.png"
-              alt="Обучающие видео Ильи Андрианова на YouTube, VK Видео и Rutube"
-              width={2048}
-              height={1536}
-            />
-          </figure>
-        </div>
-      </section>
-
-      <section className="benefits-section section">
-        <div className="section-heading section-heading-light">
-          <p className="section-kicker">Почему ITPY</p>
-          <h2>
-            Я убрал всё,
-            <br />
-            что мешает учиться
-          </h2>
-        </div>
-
-        <div className="benefits-grid">
-          <article className="benefit-card benefit-card-big">
-            <span className="benefit-icon">{"{ }"}</span>
-            <div>
-              <h3>Сложное становится понятным</h3>
-              <p>
-                Разбираю тему на маленькие шаги и сразу показываю, где она
-                встречается в реальных задачах.
-              </p>
-            </div>
-          </article>
-          <article className="benefit-card">
-            <span className="benefit-icon">↻</span>
-            <div>
-              <h3>Можно пересмотреть</h3>
-              <p>Записи и материалы остаются у ученика.</p>
-            </div>
-          </article>
-          <article className="benefit-card">
-            <span className="benefit-icon">?</span>
-            <div>
-              <h3>Не страшно спросить</h3>
-              <p>Вопросы — часть процесса, а не повод чувствовать себя хуже.</p>
-            </div>
-          </article>
-          <article className="benefit-card benefit-card-wide">
-            <span className="benefit-icon">⌁</span>
-            <div>
-              <h3>Темп, который можно выдержать</h3>
-              <p>
-                Никаких рывков на две недели. Помогаю выстроить системную
-                подготовку, которая вписывается в жизнь.
-              </p>
-            </div>
-          </article>
-        </div>
-      </section>
-
       <section className="results-section section" id="results">
         <div className="results-heading">
           <div className="section-heading">
             <p className="section-kicker">Результаты</p>
-            <h2>
-              Отзывы учеников
-              <br />и реальные баллы
-            </h2>
+            <h2>Отзывы учеников</h2>
           </div>
           <div className="results-caption">
             <span>точка А</span>
@@ -600,20 +363,20 @@ export default function HomeClient() {
               <strong>
                 {String(activeReview + 1).padStart(2, "0")} / {reviewImages.length}
               </strong>
-              <span>крути колесо — лента бесконечная</span>
+              <span>Листайте отзывы стрелками или свайпом</span>
             </div>
             <div className="review-carousel-buttons">
               <button
                 type="button"
                 aria-label="Предыдущий отзыв"
-                onClick={() => setReviewPosition((current) => Math.round(current) - 1)}
+                onClick={() => moveReviews(-1)}
               >
                 ←
               </button>
               <button
                 type="button"
                 aria-label="Следующий отзыв"
-                onClick={() => setReviewPosition((current) => Math.round(current) + 1)}
+                onClick={() => moveReviews(1)}
               >
                 →
               </button>
@@ -623,48 +386,18 @@ export default function HomeClient() {
           <div
             className="review-orbit"
             ref={reviewsRef}
-            tabIndex={0}
-            onKeyDown={(event) => {
-              if (event.key === "ArrowLeft") {
-                event.preventDefault();
-                setReviewPosition((current) => Math.round(current) - 1);
-              }
-              if (event.key === "ArrowRight") {
-                event.preventDefault();
-                setReviewPosition((current) => Math.round(current) + 1);
-              }
+            onScroll={(event) => {
+              const card = event.currentTarget.querySelector<HTMLElement>(".review-orbit-card");
+              if (card) setActiveReview(Math.min(reviewImages.length - 1, Math.round(event.currentTarget.scrollLeft / (card.offsetWidth + 16))));
             }}
           >
-            {reviewImages.map((src, index) => {
-              const distance =
-                ((((index - reviewPosition + reviewImages.length / 2) %
-                  reviewImages.length) +
-                  reviewImages.length) %
-                  reviewImages.length) -
-                reviewImages.length / 2;
-
-              const absoluteDistance = Math.abs(distance);
-              const isVisible = absoluteDistance < 4.6;
-              const scale = Math.max(0.68, 1 - absoluteDistance * 0.095);
-              const opacity = isVisible ? Math.max(0.22, 1 - absoluteDistance * 0.19) : 0;
-
-              return (
+            {reviewImages.map((src, index) => (
                 <button
                   className="review-orbit-card"
                   type="button"
                   key={src}
                   aria-label={`Открыть отзыв ${index + 1}`}
-                  aria-current={absoluteDistance < 0.5 ? "true" : undefined}
                   onClick={() => setSelectedReview(index)}
-                  style={{
-                    left: `${50 + distance * 18}%`,
-                    top: `${18 + distance * distance * 23}px`,
-                    zIndex: Math.round(100 - absoluteDistance * 10),
-                    opacity,
-                    pointerEvents: isVisible ? "auto" : "none",
-                    visibility: isVisible ? "visible" : "hidden",
-                    transform: `translateX(-50%) rotate(${distance * 4.4}deg) scale(${scale})`,
-                  }}
                 >
                   <span className="review-card-number">
                     {String(index + 1).padStart(2, "0")}
@@ -674,43 +407,21 @@ export default function HomeClient() {
                     alt={`Отзыв ученика ${index + 1}`}
                     width={index < 2 ? 1536 : index === 17 ? 1280 : 1448}
                     height={index < 2 ? 1024 : index === 17 ? 960 : 1086}
-                    loading={absoluteDistance > 3 ? "lazy" : "eager"}
+                    loading={index > 3 ? "lazy" : "eager"}
                   />
                   <span className="review-card-open">Открыть оригинал ↗</span>
                 </button>
-              );
-            })}
+            ))}
           </div>
 
           {selectedReview !== null && (
-            <div
-              className="review-lightbox"
-              role="presentation"
-              onClick={() => setSelectedReview(null)}
-              onKeyDown={(event) => {
-                if (event.key === "Escape") setSelectedReview(null);
-                if (event.key === "ArrowLeft") {
-                  setSelectedReview((current) =>
-                    current === null || current === 0
-                      ? reviewImages.length - 1
-                      : current - 1,
-                  );
-                }
-                if (event.key === "ArrowRight") {
-                  setSelectedReview((current) =>
-                    current === null || current === reviewImages.length - 1
-                      ? 0
-                      : current + 1,
-                  );
-                }
-              }}
-            >
+            <div className="review-lightbox">
+              <button className="review-lightbox-backdrop" type="button" aria-label="Закрыть отзыв" onClick={() => setSelectedReview(null)} />
               <div
                 className="review-lightbox-dialog"
                 role="dialog"
                 aria-modal="true"
                 aria-label={`Отзыв ${selectedReview + 1} из ${reviewImages.length}`}
-                onClick={(event) => event.stopPropagation()}
               >
                 <div className="review-lightbox-topbar">
                   <span>
@@ -718,7 +429,6 @@ export default function HomeClient() {
                   </span>
                   <button
                     type="button"
-                    autoFocus
                     aria-label="Закрыть отзыв"
                     onClick={() => setSelectedReview(null)}
                   >
@@ -774,6 +484,148 @@ export default function HomeClient() {
               </div>
             </div>
           )}
+        </div>
+        <a className="results-cta" href="#trial">Обсудить свою цель ↗</a>
+      </section>
+
+      <section className="team-section section" id="about">
+        <div className="team-heading">
+          <div className="section-heading">
+            <p className="section-kicker">Обо мне</p>
+            <h2>
+              Занятия
+              <br />веду сам
+            </h2>
+          </div>
+          <p>
+            ITPY — мой проект. От первой встречи до экзамена вы общаетесь
+            напрямую со мной: я веду занятия, проверяю работу и вижу прогресс.
+          </p>
+        </div>
+
+        <div className="solo-teacher-card">
+          <div className="solo-photo">
+            <img
+              src="/media/teacher-workspace.png"
+              alt="Илья Андрианов за рабочим столом"
+              width={2048}
+              height={1536}
+            />
+          </div>
+          <div className="solo-teacher-copy">
+            <span className="solo-role">Илья Андрианов · ITPY</span>
+            <h3>ЕГЭ, ОГЭ и Python — лично со мной</h3>
+            <p>
+              У меня профильное высшее образование в IT. Я сам объясняю темы,
+              проверяю решения, вижу прогресс и отвечаю на вопросы — подготовка
+              не рассыпается между разными людьми.
+            </p>
+            <div className="solo-principles">
+              {teacherPrinciples.map((item, index) => (
+                <span key={item}>
+                  <b>{String(index + 1).padStart(2, "0")}</b>
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="expertise-gallery" aria-label="Опыт и проекты Ильи">
+          <article className="expertise-card expertise-proof"><span>01 / образование</span><h3>Профильное IT-образование</h3><p>Объясняю информатику с опорой на фундаментальную базу и практику.</p></article>
+          <article className="expertise-card expertise-proof"><span>02 / проект</span><h3>ITPY — мой проект</h3><p>Веду занятия лично и остаюсь на связи с учениками на протяжении подготовки.</p></article>
+          <article className="expertise-card expertise-proof"><span>03 / материалы</span><h3>Курсы на Stepik</h3><p>Собрал отдельные материалы по Python, заданиям ЕГЭ и официальным вариантам.</p><a href="/courses">Посмотреть курсы ↗</a></article>
+        </div>
+      </section>
+
+      <section className="courses-section section" id="courses">
+        <div className="section-heading">
+          <p className="section-kicker">Направления</p>
+          <h2>
+            Выбери цель.
+            <br />
+            Маршрут соберём вместе
+          </h2>
+        </div>
+
+        <div className="courses-grid">
+          {programs.map((course) => (
+            <article
+              className={"course-card course-" + course.accent}
+              key={course.id}
+            >
+              <div className="course-card-head">
+                <span className="course-code">{course.code}</span>
+                <span className="course-arrow" aria-hidden="true">
+                  ↗
+                </span>
+              </div>
+              <div>
+                <h3>{course.title}</h3>
+                <p>{course.description}</p>
+              </div>
+              <div className="course-tags">
+                {course.topics.map((topic) => (
+                  <span key={topic}>{topic}</span>
+                ))}
+              </div>
+              <a
+                href="#trial"
+                className="course-button"
+                onClick={() => chooseProgram(course.id)}
+              >
+                Это моя цель <span>→</span>
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="benefits-section section">
+        <div className="section-heading section-heading-light">
+          <p className="section-kicker">Почему ITPY</p>
+          <h2>
+            Я убрал всё,
+            <br />
+            что мешает учиться
+          </h2>
+        </div>
+
+        <div className="benefits-grid">
+          <article className="benefit-card benefit-card-big">
+            <span className="benefit-icon">{"{ }"}</span>
+            <div>
+              <h3>Сложное становится понятным</h3>
+              <p>
+                Разбираю тему на маленькие шаги и сразу показываю, где она
+                встречается в реальных задачах.
+              </p>
+            </div>
+          </article>
+          <article className="benefit-card">
+            <span className="benefit-icon">↻</span>
+            <div>
+              <h3>Можно пересмотреть</h3>
+              <p>Записи и материалы остаются у ученика.</p>
+            </div>
+          </article>
+          <article className="benefit-card">
+            <span className="benefit-icon">?</span>
+            <div>
+              <h3>Не страшно спросить</h3>
+              <p>Вопросы — часть процесса, а не повод чувствовать себя хуже.</p>
+            </div>
+          </article>
+          <article className="benefit-card benefit-card-wide">
+            <span className="benefit-icon">⌁</span>
+            <div>
+              <h3>Темп, который можно выдержать</h3>
+              <p>
+                Никаких рывков на две недели. Помогаю выстроить системную
+                подготовку, которая вписывается в жизнь.
+              </p>
+            </div>
+          </article>
         </div>
       </section>
 
@@ -1183,7 +1035,6 @@ export default function HomeClient() {
           {faqs.map((item, index) => (
             <details key={item.q} open={index === 0}>
               <summary>
-                <span>{String(index + 1).padStart(2, "0")}</span>
                 <strong>{item.q}</strong>
                 <i>+</i>
               </summary>
@@ -1198,38 +1049,12 @@ export default function HomeClient() {
             <strong>Не нашли свой вопрос?</strong>
             <p>Напишите ITPY — разберёмся вместе.</p>
           </div>
-          <a href="#contacts">Перейти к контактам →</a>
+          <a href="#trial">Обсудить подготовку →</a>
         </div>
       </section>
 
       <footer className="site-footer" id="contacts">
-        <div className="footer-link-hub">
-          <div>
-            <span className="footer-hub-kicker">Ссылки ITPY</span>
-            <h2>Все площадки<br />в одном месте</h2>
-            <p>
-              Здесь появятся прямые ссылки на материалы, видео, соцсети и
-              полезные инструменты.
-            </p>
-          </div>
-          <div className="footer-link-grid" aria-label="Будущие ссылки ITPY">
-            {[
-              ["Telegram", "канал и материалы"],
-              ["YouTube", "разборы заданий"],
-              ["VK", "новости проекта"],
-              ["Stepik", "авторские курсы"],
-              ["Полезные боты", "практика и проверка"],
-              ["Связаться", "личные сообщения"],
-            ].map(([title, caption], index) => (
-              <span className="footer-link-placeholder" key={title}>
-                <b>{String(index + 1).padStart(2, "0")}</b>
-                <strong>{title}</strong>
-                <small>{caption}</small>
-                <i>↗</i>
-              </span>
-            ))}
-          </div>
-        </div>
+        <LinkHub />
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} ITPY</span>
           <a href="#top">Наверх ↑</a>
