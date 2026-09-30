@@ -11,19 +11,19 @@ export const metadata: Metadata = {
 
 const courses = [
   {
-    id: "python", number: "01", label: "Начать с основ", title: "Курс по Python", mark: "{ py }", tone: "violet",
+    id: "python", number: "01", label: "Начать с основ", title: "Курс по Python", tone: "violet",
     description: "Короткая теория и много практики для тех, кто начинает программировать. Задания постепенно становятся сложнее, а к трудной теме можно вернуться в любой момент.",
     materials: ["Видео и теория", "Тесты и задачи", "Обсуждения и помощь"],
     url: "https://stepik.org/course/203477/info",
   },
   {
-    id: "ege", number: "02", label: "Готовиться к экзамену", title: "Курс по ЕГЭ", mark: "27 / 27", tone: "lime",
+    id: "ege", number: "02", label: "Готовиться к экзамену", title: "Курс по ЕГЭ", tone: "blue",
     description: "Подборка заданий по информатике: сначала база ФИПИ, затем более сложная практика. Подходит для последовательной подготовки и разбора решений.",
     materials: ["Задания по темам", "Домашняя и практическая части", "Форум решений"],
     url: "https://stepik.org/course/122969/info",
   },
   {
-    id: "collections", number: "03", label: "Проверить готовность", title: "Сборники", mark: "ЕГЭ ↗", tone: "peach",
+    id: "collections", number: "03", label: "Проверить готовность", title: "Сборники", tone: "peach",
     description: "Официальные варианты ЕГЭ по информатике — материал для пробников и самостоятельной проверки перед экзаменом.",
     materials: ["Полные варианты", "Задания в формате экзамена", "Практика перед пробником"],
     url: "https://stepik.org/course/282248/info",
@@ -46,7 +46,10 @@ export default function CoursesPage() {
       <section className="course-list" aria-label="Список курсов">
         {courses.map((course) => (
           <article id={course.id} className={`course-detail course-detail-${course.tone}`} key={course.id}>
-            <div className="course-detail-art" aria-hidden="true"><span>{course.mark}</span><small>ITPY / {course.number}</small></div>
+            <div className="course-detail-art">
+              <img src="/course-cover-stepik.jpg" alt={`Обложка курса «${course.title}» на Stepik`} width="230" height="230" />
+              <small>ITPY / {course.number}</small>
+            </div>
             <div className="course-detail-copy">
               <span className="course-detail-label">{course.number} / {course.label}</span>
               <h2>{course.title}</h2>

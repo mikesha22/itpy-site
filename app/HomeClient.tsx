@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SiteHeader from "./SiteHeader";
 import LinkHub from "./LinkHub";
 
@@ -103,60 +103,24 @@ export default function HomeClient() {
   const [program, setProgram] = useState<Program>("ЕГЭ");
   const [studyFormat, setStudyFormat] =
     useState<StudyFormat>("Мини-группа");
-  const [trialStep, setTrialStep] = useState(1);
-  const [day, setDay] = useState("Завтра");
-  const [time, setTime] = useState("16:00");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
   const reviewsRef = useRef<HTMLDivElement>(null);
+  const bookingDialogRef = useRef<HTMLDialogElement>(null);
   const [activeReview, setActiveReview] = useState(0);
   const [selectedReview, setSelectedReview] = useState<number | null>(null);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingFrameLoaded, setBookingFrameLoaded] = useState(false);
+  const [bookingLoadSlow, setBookingLoadSlow] = useState(false);
+
+  useEffect(() => {
+    if (!bookingOpen || bookingFrameLoaded) return;
+    const timer = window.setTimeout(() => setBookingLoadSlow(true), 8000);
+    return () => window.clearTimeout(timer);
+  }, [bookingOpen, bookingFrameLoaded]);
 
   function moveReviews(direction: number) {
     const track = reviewsRef.current;
     const card = track?.querySelector<HTMLElement>(".review-orbit-card");
     track?.scrollBy({ left: direction * ((card?.offsetWidth ?? 310) + 16), behavior: "smooth" });
-  }
-
-  async function submitTrial(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitError("");
-
-    if (!name.trim() || !phone.trim()) {
-      setSubmitError("Заполните имя и телефон — я использую их только для связи.");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch("/api/trial", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-          program,
-          studyFormat,
-          day,
-          time,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Не удалось отправить заявку");
-      }
-
-      setTrialStep(4);
-    } catch {
-      setSubmitError(
-        "Заявка пока не отправилась. Попробуйте ещё раз или напишите мне в Telegram.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
   }
 
   function chooseProgram(nextProgram: Program) {
@@ -760,264 +724,68 @@ export default function HomeClient() {
 
       <section className="trial-section section" id="trial">
         <div className="trial-intro">
-          <span className="trial-sticker">это бесплатно</span>
-          <p className="section-kicker">Связаться со мной</p>
-          <h2>
-            Обсудить подготовку
-            <span>↘</span>
-          </h2>
+          <p className="section-kicker">Первый шаг</p>
+          <h2>Встретимся и всё обсудим.</h2>
           <p>
-            Оставьте имя и удобный контакт. Я лично отвечу, уточню задачу и
-            предложу подходящий вариант занятий.
+            На пробном занятии познакомимся, обсудим цель и наметим первые шаги подготовки.
           </p>
         </div>
 
-        <form className="simple-contact-form" onSubmit={submitTrial}>
-          {trialStep === 4 ? (
-            <div className="simple-contact-success" role="status">
-              <span>✓</span>
-              <div>
-                <h3>Заявка отправлена</h3>
-                <p>Я лично свяжусь с вами и спокойно отвечу на вопросы.</p>
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className="simple-contact-group">
-                <span className="simple-contact-label">Цель подготовки</span>
-                <div className="simple-choice-row">
-                  {programs.map((item) => (
-                    <button
-                      type="button"
-                      key={item.id}
-                      className={program === item.id ? "active" : ""}
-                      onClick={() => setProgram(item.id)}
-                    >
-                      {item.id}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="simple-contact-group">
-                <span className="simple-contact-label">Формат</span>
-                <div className="simple-choice-row simple-choice-row-format">
-                  {(["Мини-группа", "Индивидуально"] as StudyFormat[]).map(
-                    (item) => (
-                      <button
-                        type="button"
-                        key={item}
-                        className={studyFormat === item ? "active" : ""}
-                        onClick={() => setStudyFormat(item)}
-                      >
-                        {item}
-                      </button>
-                    ),
-                  )}
-                </div>
-              </div>
-
-              <div className="simple-contact-fields">
-                <label className="form-field">
-                  <span>Как вас зовут?</span>
-                  <input
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    placeholder="Имя"
-                    autoComplete="name"
-                    maxLength={80}
-                  />
-                </label>
-                <label className="form-field">
-                  <span>Телефон или Telegram</span>
-                  <input
-                    value={phone}
-                    onChange={(event) => setPhone(event.target.value)}
-                    placeholder="+7 999 000-00-00"
-                    autoComplete="tel"
-                    maxLength={80}
-                  />
-                </label>
-              </div>
-
-              {submitError && <p className="form-error">{submitError}</p>}
-              <button
-                className="simple-contact-submit"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Отправляю..." : "Обсудить подготовку"}
-                {!isSubmitting && <span>→</span>}
-              </button>
-              <p className="privacy-note">
-                Контакт нужен только для ответа по заявке.
-              </p>
-            </>
-          )}
-        </form>
-
-        <form className="trial-form trial-form-legacy" onSubmit={submitTrial}>
-          <div className="trial-progress" aria-label="Шаги записи">
-            {["Программа", "Время", "Контакты"].map((label, index) => (
-              <div
-                className={
-                  trialStep >= index + 1
-                    ? "trial-progress-step active"
-                    : "trial-progress-step"
-                }
-                key={label}
-              >
-                <span>{index + 1}</span>
-                <small>{label}</small>
-              </div>
-            ))}
+        <div className="planerka-booking-card">
+          <div className="planerka-booking-meta">
+            <span>Пробное занятие</span>
+            <span>60 минут · онлайн</span>
           </div>
-
-          {trialStep === 1 && (
-            <div className="trial-panel">
-              <span className="trial-panel-label">Что вас интересует?</span>
-              <div className="trial-program-grid">
-                {programs.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={program === item.id ? "active" : ""}
-                    onClick={() => setProgram(item.id)}
-                  >
-                    <span>{item.code}</span>
-                    <strong>{item.title}</strong>
-                  </button>
-                ))}
-              </div>
-              <span className="trial-panel-label">Как хочется заниматься?</span>
-              <div className="trial-format-row">
-                {(["Мини-группа", "Индивидуально"] as StudyFormat[]).map(
-                  (item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      className={studyFormat === item ? "active" : ""}
-                      onClick={() => setStudyFormat(item)}
-                    >
-                      {item}
-                    </button>
-                  ),
-                )}
-              </div>
-              <button
-                className="trial-next"
-                type="button"
-                onClick={() => setTrialStep(2)}
-              >
-                Выбрать время <span>→</span>
-              </button>
+          <h3>Выбери удобное время</h3>
+          <p>В календаре показаны свободные часы в твоём часовом поясе.</p>
+          <a
+            className="planerka-booking-button"
+            href="https://planerka.app/ilandroxy/first-lesson"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(event) => {
+              if (bookingDialogRef.current?.showModal) {
+                event.preventDefault();
+                setBookingFrameLoaded(false);
+                setBookingLoadSlow(false);
+                setBookingOpen(true);
+                bookingDialogRef.current.showModal();
+              }
+            }}
+          >
+            Открыть календарь <span aria-hidden="true">↗</span>
+          </a>
+          <span className="planerka-booking-footnote">Запись подтвердится в Планёрке</span>
+        </div>
+        <dialog
+          className="planerka-booking-dialog"
+          ref={bookingDialogRef}
+          onClose={() => setBookingOpen(false)}
+          aria-label="Запись на пробное занятие"
+        >
+          <div className="planerka-booking-dialog-header">
+            <strong>Пробное занятие · 60 минут</strong>
+            <a href="https://planerka.app/ilandroxy/first-lesson">
+              Открыть отдельно ↗
+            </a>
+            <button type="button" onClick={() => bookingDialogRef.current?.close()} aria-label="Закрыть календарь">×</button>
+          </div>
+          {bookingOpen && (
+            <iframe
+              title="Календарь записи на пробное занятие в Планёрке"
+              src="https://planerka.app/ilandroxy/first-lesson?embed=1"
+              onLoad={() => setBookingFrameLoaded(true)}
+            />
+          )}
+          {bookingLoadSlow && !bookingFrameLoaded && (
+            <div className="planerka-booking-dialog-help" role="status">
+              <strong>Календарь долго загружается</strong>
+              <p>Можно выбрать время прямо на странице Планёрки.</p>
+              <a href="https://planerka.app/ilandroxy/first-lesson">Перейти к записи ↗</a>
             </div>
           )}
-
-          {trialStep === 2 && (
-            <div className="trial-panel">
-              <span className="trial-panel-label">Выберите день</span>
-              <div className="trial-days">
-                {["Завтра", "Послезавтра", "В течение недели"].map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    className={day === item ? "active" : ""}
-                    onClick={() => setDay(item)}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-              <span className="trial-panel-label">Удобное время</span>
-              <div className="trial-times">
-                {["12:00", "14:00", "16:00", "18:00", "19:30"].map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    className={time === item ? "active" : ""}
-                    onClick={() => setTime(item)}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-              <div className="trial-navigation">
-                <button type="button" onClick={() => setTrialStep(1)}>
-                  ← Назад
-                </button>
-                <button
-                  className="trial-next"
-                  type="button"
-                  onClick={() => setTrialStep(3)}
-                >
-                  Продолжить <span>→</span>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {trialStep === 3 && (
-            <div className="trial-panel">
-              <div className="trial-summary-line">
-                <span>{program}</span>
-                <span>{studyFormat}</span>
-                <span>{day}</span>
-                <span>{time}</span>
-              </div>
-              <label className="form-field">
-                <span>Как вас зовут?</span>
-                <input
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Имя"
-                  autoComplete="name"
-                  maxLength={80}
-                />
-              </label>
-              <label className="form-field">
-                <span>Телефон или Telegram</span>
-                <input
-                  value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
-                  placeholder="+7 999 000-00-00"
-                  autoComplete="tel"
-                  maxLength={80}
-                />
-              </label>
-              {submitError && <p className="form-error">{submitError}</p>}
-              <div className="trial-navigation">
-                <button type="button" onClick={() => setTrialStep(2)}>
-                  ← Назад
-                </button>
-                <button
-                  className="trial-next"
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Отправляем..." : "Записаться"}
-                  {!isSubmitting && <span>→</span>}
-                </button>
-              </div>
-              <p className="privacy-note">
-                Нажимая кнопку, вы соглашаетесь на обработку данных для связи по
-                заявке.
-              </p>
-            </div>
-          )}
-
-          {trialStep === 4 && (
-            <div className="trial-success" role="status">
-              <span>✓</span>
-              <h3>Заявка у нас!</h3>
-              <p>
-                Я свяжусь с вами, подтвержу время и отвечу на вопросы.
-              </p>
-            </div>
-          )}
-        </form>
+        </dialog>
       </section>
-
       <section className="faq-section section" id="faq">
         <div className="faq-heading">
           <div className="section-heading">

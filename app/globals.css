@@ -4017,7 +4017,51 @@ summary:focus-visible {
 .results-section { order: 2; }
 .team-section { order: 3; }
 .courses-section { order: 4; }
-.trial-section { order: 5; display: grid; }
+.trial-section { order: 5; display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(32px, 5vw, 68px); }
+.trial-intro h2 { font-size: clamp(42px, 4.8vw, 66px); }
+.planerka-booking-card {
+  max-width: 600px;
+  padding: clamp(26px, 3.5vw, 42px);
+  border: 1px solid #d9d8ed;
+  border-top: 7px solid #7776e7;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(52, 54, 118, .11);
+}
+.planerka-booking-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 18px; color: #656589; font-size: 13px; font-weight: 800; }
+.planerka-booking-meta span:first-child { color: #5556ba; text-transform: uppercase; letter-spacing: .07em; }
+.planerka-booking-card h3 { margin: 30px 0 12px; color: #262748; font-size: clamp(32px, 3.4vw, 46px); line-height: 1.02; letter-spacing: -.05em; }
+.planerka-booking-card p { max-width: 430px; margin: 0; color: #5f6078; font-size: 16px; line-height: 1.5; }
+.planerka-booking-button { width: fit-content; min-height: 56px; margin-top: 30px; padding: 14px 20px; border-radius: 13px; display: flex; align-items: center; justify-content: space-between; gap: 22px; background: #6066bd; color: #fff; font-size: 15px; font-weight: 850; transition: background 160ms ease, transform 160ms ease; }
+.planerka-booking-button:hover { background: #4d54aa; transform: translateY(-2px); }
+.planerka-booking-button:focus-visible { outline: 3px solid #7776e7; outline-offset: 3px; }
+.planerka-booking-footnote { display: block; margin-top: 18px; color: #77778a; font-size: 13px; }
+.planerka-booking-dialog { position: fixed; inset: 0; width: min(1060px, calc(100vw - 28px)); height: min(840px, calc(100dvh - 28px)); max-width: none; max-height: none; margin: auto; padding: 0; border: 0; border-radius: 22px; overflow: hidden; background: #f7f8ff; box-shadow: 0 24px 80px rgba(14, 17, 48, .3); }
+.planerka-booking-dialog[open] { display: flex; flex-direction: column; }
+.planerka-booking-dialog::backdrop { background: rgba(24, 27, 62, .72); backdrop-filter: blur(5px); }
+.planerka-booking-dialog-header { min-height: 66px; padding: 12px 17px 12px 23px; display: flex; align-items: center; gap: 18px; background: #fff; color: #282947; }
+.planerka-booking-dialog-header strong { margin-right: auto; font-size: 15px; }
+.planerka-booking-dialog-header a { color: #5456b3; font-size: 14px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+.planerka-booking-dialog-header button { width: 38px; height: 38px; border: 0; border-radius: 11px; background: #eae9fb; color: #30335c; cursor: pointer; font: inherit; font-size: 27px; line-height: 1; }
+.planerka-booking-dialog-header button:hover { background: #dcdaf5; }
+.planerka-booking-dialog-header a:focus-visible,
+.planerka-booking-dialog-header button:focus-visible { outline: 3px solid #7776e7; outline-offset: 2px; }
+.planerka-booking-dialog iframe { width: 100%; min-height: 0; flex: 1; border: 0; background: #f7f8ff; }
+.planerka-booking-dialog-help { position: absolute; top: 50%; left: 50%; width: min(330px, calc(100% - 32px)); padding: 23px; border: 1px solid #dcdcf0; border-radius: 18px; background: #fff; box-shadow: 0 12px 34px rgba(31, 34, 80, .12); color: #30324f; text-align: center; transform: translate(-50%, -50%); }
+.planerka-booking-dialog-help strong { font-size: 17px; }
+.planerka-booking-dialog-help p { margin: 10px 0 18px; color: #646782; font-size: 14px; line-height: 1.45; }
+.planerka-booking-dialog-help a { color: #5155b6; font-size: 14px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 980px) {
+  .trial-section { grid-template-columns: 1fr; gap: 28px; }
+}
+@media (max-width: 620px) {
+  .trial-intro h2 { font-size: clamp(40px, 10vw, 52px); }
+  .planerka-booking-card { padding: 25px 22px; }
+  .planerka-booking-button { width: 100%; }
+  .planerka-booking-dialog-header { min-height: 56px; padding: 9px 12px; gap: 9px; }
+  .planerka-booking-dialog-header strong { font-size: 12px; }
+  .planerka-booking-dialog-header a { font-size: 12px; }
+}
 .faq-section { order: 6; }
 .site-footer { order: 7; }
 .learning-card { cursor: default; }
@@ -4093,12 +4137,12 @@ summary:focus-visible {
 .course-jump a:hover { background: #e7e5ff; border-color: #e7e5ff; color: #30345f; }
 .course-list { display: grid; gap: 20px; }
 .course-detail { scroll-margin-top: 130px; min-height: 405px; border: 1px solid #d7d8f5; border-radius: 28px; overflow: hidden; display: grid; grid-template-columns: minmax(240px, .72fr) 1fr; background: #f6f5ff; box-shadow: 0 16px 36px rgba(45,48,106,.14); }
-.course-detail-art { min-height: 360px; padding: 30px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; color: var(--ink); }
-.course-detail-violet .course-detail-art { background: #dedcff; }
-.course-detail-lime .course-detail-art { background: var(--lime); }
-.course-detail-peach .course-detail-art { background: #ffd8c9; }
-.course-detail-art > span { margin: auto; font-size: clamp(55px, 6vw, 100px); font-family: Consolas, monospace; font-weight: 900; letter-spacing: -.09em; transform: rotate(-7deg); }
-.course-detail-art small { font-size: 12px; font-weight: 900; letter-spacing: .08em; }
+.course-detail-art { min-height: 360px; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; color: var(--ink); }
+.course-detail-violet .course-detail-art { background: radial-gradient(circle at 50% 45%, #f1efff 0, #dedcff 72%); }
+.course-detail-blue .course-detail-art { background: radial-gradient(circle at 50% 45%, #e9f7ff 0, #c9e7f5 72%); }
+.course-detail-peach .course-detail-art { background: radial-gradient(circle at 50% 45%, #fff0e8 0, #ffd8c9 72%); }
+.course-detail-art img { width: clamp(150px, 18vw, 230px); height: auto; aspect-ratio: 1; margin: auto; border: 8px solid rgba(255,255,255,.8); border-radius: 22px; object-fit: cover; box-shadow: 0 18px 34px rgba(43,47,83,.2); }
+.course-detail-art small { align-self: flex-start; font-size: 12px; font-weight: 900; letter-spacing: .08em; }
 .course-detail-copy { padding: clamp(29px, 5vw, 65px); display: flex; flex-direction: column; align-items: flex-start; color: #242645; }
 .course-detail-label { color: #5d608e; font-size: 11px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
 .course-detail-copy h2 { margin: 16px 0; font-size: clamp(39px, 4.8vw, 68px); line-height: .95; letter-spacing: -.055em; }
@@ -4136,7 +4180,6 @@ summary:focus-visible {
   .courses-hero { padding-top: 210px; }
   .course-detail { grid-template-columns: 1fr; }
   .course-detail-art { min-height: 200px; }
-  .course-detail-art > span { font-size: 70px; }
   .expertise-gallery { grid-template-columns: 1fr; }
 }
 @media (max-width: 620px) {
