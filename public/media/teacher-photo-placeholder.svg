@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#F5F0DF"/>
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M40 0H0V40" stroke="#DDD6BE" stroke-opacity=".45"/>
+  </pattern>
+  <rect width="800" height="600" fill="url(#grid)"/>
+  <circle cx="68" cy="522" r="115" fill="#E4ECCC"/>
+  <circle cx="779" cy="76" r="135" fill="#F1DCC7"/>
+  <g transform="rotate(-4 400 300)">
+    <rect x="104" y="154" width="600" height="324" rx="30" fill="#C7BEA3" opacity=".3"/>
+    <rect x="94" y="142" width="600" height="324" rx="30" fill="#FFFDF5" stroke="#D9D0B5" stroke-width="2"/>
+    <rect x="303" y="121" width="186" height="42" rx="5" fill="#D5E88C" opacity=".9"/>
+    <g fill="#363B2A" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif">
+      <text x="394" y="247" font-size="35" font-weight="500">Здесь могла бы быть</text>
+      <text x="394" y="319" font-size="58" font-weight="700" letter-spacing="-2">ваша реклама</text>
+      <text x="394" y="387" font-size="23" fill="#797665">Но скоро здесь будет Илья.</text>
+    </g>
+  </g>
+  <g transform="rotate(12 676 440)">
+    <circle cx="676" cy="440" r="55" fill="#DAEB95" stroke="#65783F" stroke-width="2"/>
+    <circle cx="660" cy="430" r="4" fill="#43542B"/>
+    <circle cx="693" cy="430" r="4" fill="#43542B"/>
+    <path d="M651 449Q676 474 701 449" stroke="#43542B" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g stroke="#8D957B" stroke-width="3" stroke-linecap="round">
+    <path d="m116 87 8 19m-35-7 19 7m26-35-2 20M724 303l14-7m-11 29 17 4"/>
+    <path d="M141 478q-25 26 10 45"/>
+  </g>
+  <text x="400" y="554" text-anchor="middle" fill="#82816E" font-family="Segoe UI, Arial, sans-serif" font-size="18">Не забыть заменить фото :)</text>
+</svg>

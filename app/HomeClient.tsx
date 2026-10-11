@@ -7,6 +7,45 @@ import LinkHub from "./LinkHub";
 type Program = "ЕГЭ" | "ОГЭ" | "Python";
 type StudyFormat = "Мини-группа" | "Индивидуально";
 
+function CourseArtwork({ program }: { program: Program }) {
+  return (
+    <svg className="course-artwork" viewBox="0 0 320 130" fill="none" aria-hidden="true" focusable="false">
+      <text x="18" y="94" fill="currentColor" fontSize="48" fontWeight="650" letterSpacing="-3">{program === "Python" ? "PY" : program}</text>
+      {program === "ЕГЭ" ? (
+        <g stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M162 98C198 98 185 65 223 65S252 32 288 32" strokeDasharray="3 7" opacity=".55" />
+          <rect x="144" y="80" width="36" height="36" rx="11" fill="white" />
+          <rect x="205" y="47" width="36" height="36" rx="11" fill="white" />
+          <rect x="266" y="14" width="36" height="36" rx="11" fill="white" />
+          <g fill="currentColor" stroke="none" fontSize="12" fontWeight="600" textAnchor="middle">
+            <text x="162" y="103">01</text><text x="223" y="70">14</text><text x="284" y="37">27</text>
+          </g>
+          <path d="M274 81l8 8 17-21" strokeWidth="4" />
+        </g>
+      ) : program === "ОГЭ" ? (
+        <g stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="170" y="20" width="97" height="103" rx="12" transform="rotate(-8 170 20)" opacity=".3" />
+          <rect x="182" y="12" width="97" height="103" rx="12" fill="white" />
+          <path d="M197 37l4 4 7-8m-11 29 4 4 7-8m-11 29 4 4 7-8" />
+          <path d="M219 37h43m-43 25h35m-35 25h25" opacity=".5" />
+          <path d="M264 93l24-29 8 7-24 29-13 5z" fill="white" />
+        </g>
+      ) : (
+        <g>
+          <rect x="148" y="16" width="158" height="106" rx="14" fill="currentColor" />
+          <path d="M149 40h156" stroke="white" opacity=".2" />
+          <g fill="white" opacity=".65"><circle cx="162" cy="28" r="3" /><circle cx="173" cy="28" r="3" /><circle cx="184" cy="28" r="3" /></g>
+          <g fill="white" fontFamily="Consolas, monospace" fontSize="13">
+            <text x="162" y="64" opacity=".7">{"> x = 1"}</text>
+            <text x="162" y="86">{"print(x + 1)"}</text>
+            <text x="162" y="108" opacity=".7">2 <tspan fill="#dfff68">▌</tspan></text>
+          </g>
+        </g>
+      )}
+    </svg>
+  );
+}
+
 const programs: Array<{
   id: Program;
   code: string;
@@ -44,6 +83,86 @@ const programs: Array<{
   },
 ];
 
+function LearningArtwork({ step }: { step: string }) {
+  return (
+    <svg className="learning-artwork" viewBox="0 0 160 105" fill="none" aria-hidden="true" focusable="false">
+      <ellipse cx="80" cy="55" rx="66" ry="43" fill="currentColor" opacity=".09" />
+      <g stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        {step === "01" ? (
+          <>
+            <path d="M31 25h68a12 12 0 0 1 12 12v25a12 12 0 0 1-12 12H57L38 88V74h-7a12 12 0 0 1-12-12V37a12 12 0 0 1 12-12Z" fill="white" />
+            <path d="M111 46h15a12 12 0 0 1 12 12v20l-1 12-16-9H95" opacity=".55" />
+            <path d="M40 44h49M40 56h31" opacity=".45" />
+            <path d="m104 15 4-7m13 15 8-2" />
+          </>
+        ) : step === "02" ? (
+          <>
+            <path d="M26 30c22-7 39-3 54 8 15-11 32-15 54-8v53c-22-7-39-3-54 8-15-11-32-15-54-8Z" fill="white" />
+            <path d="M80 38v53M39 45l25 5M39 58l25 5m33-13 24-5m-24 18 24-5" opacity=".5" />
+            <path d="M71 14h18m-9-8v16" />
+          </>
+        ) : step === "03" ? (
+          <>
+            <rect x="24" y="23" width="112" height="65" rx="12" fill="white" />
+            <path d="M25 40h110" opacity=".3" />
+            <path d="m57 53-12 11 12 11m45-22 12 11-12 11m-17-25-10 29" />
+            <path d="m125 12 5-7m10 18 8-1" />
+          </>
+        ) : step === "04" ? (
+          <>
+            <rect x="36" y="18" width="77" height="76" rx="11" fill="white" />
+            <rect x="58" y="12" width="33" height="13" rx="5" fill="white" />
+            <path d="m50 44 4 4 7-9m-11 23 4 4 7-9m-11 23 4 4 7-9M71 44h27M71 62h20M71 80h14" />
+            <circle cx="119" cy="76" r="19" fill="white" />
+            <path d="M119 65v12l7 4" />
+          </>
+        ) : (
+          <>
+            <path d="M55 20h50v26a25 25 0 0 1-50 0Z" fill="white" />
+            <path d="M55 28H39v11a18 18 0 0 0 21 18m45-29h16v11a18 18 0 0 1-21 18M80 71v16M65 91h30" />
+            <path d="m80 29 3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1Z" fill="currentColor" stroke="none" />
+            <path d="m28 66 4 6m95-57 5-5m-1 56 6-3M36 14l5 4" />
+          </>
+        )}
+      </g>
+    </svg>
+  );
+}
+
+function AboutArtwork({ kind }: { kind: "education" | "experience" | "official" }) {
+  return (
+    <svg className="about-artwork" viewBox="0 0 130 90" fill="none" aria-hidden="true" focusable="false">
+      <ellipse cx="68" cy="48" rx="54" ry="35" fill="currentColor" opacity=".08" />
+      <g stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        {kind === "education" ? (
+          <>
+            <rect x="24" y="19" width="79" height="53" rx="8" fill="white" transform="rotate(-8 24 19)" opacity=".45" />
+            <rect x="32" y="12" width="79" height="53" rx="8" fill="white" />
+            <path d="M45 28h40M45 40h27" opacity=".45" />
+            <circle cx="94" cy="55" r="12" fill="white" />
+            <path d="m87 65-2 14 9-5 9 5-2-14m-12-11 4 4 7-8" />
+          </>
+        ) : kind === "experience" ? (
+          <>
+            <path d="M22 66c21 0 17-19 38-19s20-23 43-23" strokeDasharray="3 6" opacity=".5" />
+            <circle cx="23" cy="66" r="8" fill="white" />
+            <circle cx="63" cy="46" r="8" fill="white" />
+            <rect x="90" y="12" width="30" height="29" rx="10" fill="white" />
+            <path d="m98 26 5 5 9-11M72 72h40m-24-9v18" />
+          </>
+        ) : (
+          <>
+            <path d="M39 12h54v66l-9-5-9 5-9-5-9 5-9-5-9 5Z" fill="white" />
+            <path d="M51 29h28M51 41h19M51 53h12" opacity=".45" />
+            <circle cx="98" cy="61" r="18" fill="white" />
+            <path d="m90 61 6 6 11-13" />
+          </>
+        )}
+      </g>
+    </svg>
+  );
+}
+
 const learningSteps = [
   {
     number: "01",
@@ -64,6 +183,11 @@ const learningSteps = [
     number: "04",
     title: "Готовимся к экзамену",
     text: "Пишем пробники, отслеживаем прогресс и выходим на экзамен увереннее.",
+  },
+  {
+    number: "05",
+    title: "Сдаём экзамен",
+    text: "Выходим на экзамен с отработанными заданиями и понятным планом действий.",
   },
 ];
 
@@ -104,18 +228,25 @@ export default function HomeClient() {
   const [studyFormat, setStudyFormat] =
     useState<StudyFormat>("Мини-группа");
   const reviewsRef = useRef<HTMLDivElement>(null);
-  const bookingDialogRef = useRef<HTMLDialogElement>(null);
+  const bookingFrameRef = useRef<HTMLIFrameElement>(null);
+  const bookingViewportRef = useRef<HTMLDivElement>(null);
+  const [bookingScale, setBookingScale] = useState(1);
   const [activeReview, setActiveReview] = useState(0);
   const [selectedReview, setSelectedReview] = useState<number | null>(null);
-  const [bookingOpen, setBookingOpen] = useState(false);
-  const [bookingFrameLoaded, setBookingFrameLoaded] = useState(false);
-  const [bookingLoadSlow, setBookingLoadSlow] = useState(false);
 
   useEffect(() => {
-    if (!bookingOpen || bookingFrameLoaded) return;
-    const timer = window.setTimeout(() => setBookingLoadSlow(true), 8000);
-    return () => window.clearTimeout(timer);
-  }, [bookingOpen, bookingFrameLoaded]);
+    const viewport = bookingViewportRef.current;
+    if (!viewport) return;
+    const resize = () => {
+      const style = getComputedStyle(viewport);
+      const width = viewport.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+      setBookingScale(Math.min(1, width / 520));
+    };
+    resize();
+    const observer = new ResizeObserver(resize);
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, []);
 
   function moveReviews(direction: number) {
     const track = reviewsRef.current;
@@ -132,7 +263,7 @@ export default function HomeClient() {
       <section className="hero" id="top">
         <SiteHeader active="home" />
 
-        <div className="hero-grid">
+        <div className="hero-grid hero-grid-text-only">
           <div className="hero-copy">
             <div className="eyebrow">
               <span className="live-dot" aria-hidden="true" />
@@ -142,13 +273,21 @@ export default function HomeClient() {
             <h1>
               Информатика,
               <br />
-              которую ты <span className="highlight">понимаешь</span>
+              которую <span className="highlight">понимаешь</span>
             </h1>
 
             <p className="hero-lead">
-              ITPY — мой авторский проект по информатике. Я готовлю к ЕГЭ и
-              ОГЭ, разбираю Python и объясняю сложное человеческим языком.
+              Готовлю к ЕГЭ и ОГЭ по информатике и учу Python с нуля.
+              Объясняю сложное человеческим языком и веду каждого ученика
+              до качественного результата на экзамене.
             </p>
+
+            <dl className="hero-proof" aria-label="Опыт и результаты преподавателя">
+              {/* Temporary figures requested by the owner; replace with confirmed statistics. */}
+              <div><dt>учеников подготовлено</dt><dd>999</dd></div>
+              <div><dt>средний балл ЕГЭ</dt><dd>999</dd></div>
+              <div><dt>профильное IT-образование</dt><dd>Высшее</dd></div>
+            </dl>
 
             <div className="hero-actions">
               <a className="primary-cta" href="#trial">
@@ -164,26 +303,52 @@ export default function HomeClient() {
             </div>
           </div>
 
-          <div className="hero-visual" aria-label="Илья Андрианов — преподаватель информатики">
-            <div className="visual-orbit visual-orbit-one" aria-hidden="true" />
-            <div className="visual-orbit visual-orbit-two" aria-hidden="true" />
-
-            <div className="subject-chip subject-chip-python">
-              <span>⌘</span> Python
-            </div>
-            <div className="subject-chip subject-chip-exam">ЕГЭ · 27</div>
-
-            <figure className="hero-photo-card">
-              <img
-                src="/media/teacher-workspace.png"
-                alt="Илья Андрианов за рабочим столом, где проходят занятия по информатике"
-                width={2048}
-                height={1536}
-              />
-            </figure>
-          </div>
         </div>
 
+      </section>
+
+      <section className="courses-section section" id="courses">
+        <div className="section-heading">
+          <p className="section-kicker">Направления</p>
+          <h2>Выбери цель. Маршрут соберём вместе</h2>
+          <p className="directions-lead">Три направления — с понятным маршрутом, практикой и обратной связью.</p>
+        </div>
+
+        <div className="courses-grid">
+          {programs.map((course) => (
+            <article
+              className={"course-card course-" + course.accent}
+              key={course.id}
+            >
+              <div className="course-visual">
+                <div className="course-card-head">
+                  <span className="course-code">{course.code}</span>
+                  <span className="course-scope">{course.id === "Python" ? "Программирование" : "Подготовка к экзамену"}</span>
+                </div>
+                <CourseArtwork program={course.id} />
+              </div>
+              <div>
+                <h3>{course.title}</h3>
+                <p>{course.description}</p>
+              </div>
+              <div className="course-tags">
+                {course.topics.map((topic) => (
+                  <span key={topic}>{topic}</span>
+                ))}
+              </div>
+              <a
+                href="#trial"
+                className="course-button"
+                onClick={() => chooseProgram(course.id)}
+              >
+                {course.id === "Python" ? "Начать учить Python" : `Готовиться к ${course.id}`} <span aria-hidden="true">→</span>
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="teaching-features section" aria-label="Формат занятий">
         <div className="hero-bottom" aria-label="Ключевые особенности">
           <div>
             <span className="feature-number">01</span>
@@ -233,11 +398,7 @@ export default function HomeClient() {
       <section className="learning-section section" id="learning">
         <div className="section-heading section-heading-light">
           <p className="section-kicker">Как всё устроено</p>
-          <h2>
-            Учёба без режима
-            <br />
-            «ничего не понимаю»
-          </h2>
+          <h2>Учёба без режима «ничего не понимаю»</h2>
           <p className="section-intro">
             Понятный маршрут вместо бесконечных файлов, случайных уроков и
             надежды, что однажды всё сложится само.
@@ -246,14 +407,27 @@ export default function HomeClient() {
 
         <div className="learning-grid">
           {learningSteps.map((step) => (
-            <article className="learning-card" key={step.number}>
+            <article className={`learning-card${step.number === "05" ? " learning-card-finish" : ""}`} key={step.number}>
               <div className="learning-card-top">
                 <span>{step.number}</span>
+                <span className="learning-stage-label">{({ "01": "Старт", "02": "База", "03": "Практика", "04": "Пробники", "05": "Финиш" } as Record<string, string>)[step.number]}</span>
               </div>
+              <LearningArtwork step={step.number} />
               <h3>{step.title}</h3>
               <p>{step.text}</p>
+              {step.number === "05" && (
+                <div className="learning-finish-score">
+                  {/* Temporary average requested by the owner. */}
+                  <strong>999</strong><span>средний балл<br />учеников на ЕГЭ</span>
+                </div>
+              )}
             </article>
           ))}
+        </div>
+
+        <div className="learning-results-link">
+          <p>Как ученики прошли этот путь — в их отзывах.</p>
+          <a href="#results">Посмотреть отзывы <span aria-hidden="true">→</span></a>
         </div>
 
         <div className="learning-media">
@@ -456,10 +630,7 @@ export default function HomeClient() {
         <div className="team-heading">
           <div className="section-heading">
             <p className="section-kicker">Обо мне</p>
-            <h2>
-              Занятия
-              <br />веду сам
-            </h2>
+            <h2>Занятия веду сам</h2>
           </div>
           <p>
             ITPY — мой проект. От первой встречи до экзамена вы общаетесь
@@ -468,21 +639,22 @@ export default function HomeClient() {
         </div>
 
         <div className="solo-teacher-card">
-          <div className="solo-photo">
+          <div className="solo-photo solo-photo-placeholder">
+            {/* Replace this temporary image with the owner's new photo. */}
             <img
-              src="/media/teacher-workspace.png"
-              alt="Илья Андрианов за рабочим столом"
-              width={2048}
-              height={1536}
+              src="/media/teacher-photo-placeholder.svg"
+              alt="Здесь могла бы быть ваша реклама. Но скоро здесь будет Илья. Не забыть заменить фото."
+              width={800}
+              height={600}
             />
           </div>
           <div className="solo-teacher-copy">
             <span className="solo-role">Илья Андрианов · ITPY</span>
             <h3>ЕГЭ, ОГЭ и Python — лично со мной</h3>
             <p>
-              У меня профильное высшее образование в IT. Я сам объясняю темы,
-              проверяю решения, вижу прогресс и отвечаю на вопросы — подготовка
-              не рассыпается между разными людьми.
+              Помогаю разобраться в информатике, а не просто запомнить решения.
+              Сам объясняю темы, проверяю практику и подбираю темп под ученика.
+              Между занятиями можно задать вопрос напрямую мне.
             </p>
             <div className="solo-principles">
               {teacherPrinciples.map((item, index) => (
@@ -495,53 +667,50 @@ export default function HomeClient() {
           </div>
         </div>
 
-        <div className="expertise-gallery" aria-label="Опыт и проекты Ильи">
-          <article className="expertise-card expertise-proof"><span>01 / образование</span><h3>Профильное IT-образование</h3><p>Объясняю информатику с опорой на фундаментальную базу и практику.</p></article>
-          <article className="expertise-card expertise-proof"><span>02 / проект</span><h3>ITPY — мой проект</h3><p>Веду занятия лично и остаюсь на связи с учениками на протяжении подготовки.</p></article>
-          <article className="expertise-card expertise-proof"><span>03 / материалы</span><h3>Курсы на Stepik</h3><p>Собрал отдельные материалы по Python, заданиям ЕГЭ и официальным вариантам.</p><a href="/courses">Посмотреть курсы ↗</a></article>
+        <div className="expertise-gallery" aria-label="Образование, опыт и официальная работа">
+          <article className="expertise-card expertise-proof">
+            <div className="about-proof-top"><span>Образование</span><AboutArtwork kind="education" /></div>
+            <h3>Информатика — моя специальность</h3>
+            <p>Высшее IT-образование: бакалавриат по направлению «Информатика и вычислительная техника».</p>
+            <a href="/media/teacher-diploma.png" target="_blank" rel="noopener noreferrer">Посмотреть диплом <span aria-hidden="true">↗</span></a>
+          </article>
+          <article className="expertise-card expertise-proof">
+            <div className="about-proof-top"><span>Опыт</span><AboutArtwork kind="experience" /></div>
+            {/* Temporary teaching experience requested by the owner. */}
+            <h3><strong className="about-experience-number">999</strong> лет репетиторства</h3>
+            <p>Лично веду учеников от знакомства и первых задач до итогового экзамена.</p>
+          </article>
+          <article className="expertise-card expertise-proof">
+            <div className="about-proof-top"><span>Официально</span><AboutArtwork kind="official" /></div>
+            <h3>Работаю как ИП</h3>
+            <p>Выдаю чеки после оплаты и предоставляю документы для оформления налогового вычета.</p>
+            <a href="/media/teacher-official.png" target="_blank" rel="noopener noreferrer">Подробнее о документах <span aria-hidden="true">↗</span></a>
+          </article>
         </div>
-      </section>
 
-      <section className="courses-section section" id="courses">
-        <div className="section-heading">
-          <p className="section-kicker">Направления</p>
-          <h2>
-            Выбери цель.
-            <br />
-            Маршрут соберём вместе
-          </h2>
-        </div>
-
-        <div className="courses-grid">
-          {programs.map((course) => (
-            <article
-              className={"course-card course-" + course.accent}
-              key={course.id}
-            >
-              <div className="course-card-head">
-                <span className="course-code">{course.code}</span>
-                <span className="course-arrow" aria-hidden="true">
-                  ↗
-                </span>
-              </div>
-              <div>
-                <h3>{course.title}</h3>
-                <p>{course.description}</p>
-              </div>
-              <div className="course-tags">
-                {course.topics.map((topic) => (
-                  <span key={topic}>{topic}</span>
-                ))}
-              </div>
-              <a
-                href="#trial"
-                className="course-button"
-                onClick={() => chooseProgram(course.id)}
-              >
-                Это моя цель <span>→</span>
-              </a>
+        <div className="about-preparation">
+          <div className="about-preparation-heading">
+            <div><span className="about-small-label">На протяжении подготовки</span><h3>Занятия заканчиваются.<br />Поддержка — продолжается.</h3></div>
+            <p>Материалы, практика и помощь собраны в одном маршруте — понятно, где учиться и к кому идти с вопросом.</p>
+          </div>
+          <div className="about-resource-grid">
+            <article className="about-resource-card">
+              <span className="about-service-mark" aria-hidden="true"><img src="/brands/zoom.png" alt="" width={32} height={32} /></span>
+              <div><span className="about-small-label">Zoom · живые занятия</span><h4>Разбираемся вместе</h4><p>Объясняю тему, показываю решение и отвечаю на вопросы прямо на уроке.</p></div>
             </article>
-          ))}
+            <article className="about-resource-card">
+              <span className="about-service-mark" aria-hidden="true"><img src="/brands/stepik.webp" alt="" width={32} height={32} /></span>
+              <div><span className="about-small-label">Stepik · теория и практика</span><h4>Закрепляем в своём темпе</h4><p>Учебные материалы, задания и курсы по Python и ЕГЭ — для работы между уроками.</p><a href="/courses">Открыть курсы <span aria-hidden="true">↗</span></a></div>
+            </article>
+            <article className="about-resource-card">
+              <span className="about-service-mark" aria-hidden="true"><img src="/brands/telegram.svg" alt="" width={32} height={32} /></span>
+              <div><span className="about-small-label">Telegram · канал и бот</span><h4>Всё нужное под рукой</h4><p>Конспекты, домашние задания и расписание в боте. Дополнительные материалы — в канале.</p><a href="https://t.me/informatika_kege_itpy" target="_blank" rel="noopener noreferrer">Перейти в канал <span aria-hidden="true">↗</span></a></div>
+            </article>
+            <article className="about-resource-card">
+              <span className="about-service-mark" aria-hidden="true">?</span>
+              <div><span className="about-small-label">Личная обратная связь</span><h4>С вопросами — ко мне</h4><p>Сам проверяю решения, разбираю ошибки и помогаю вернуться к задаче, если что-то не получается.</p><a href="https://t.me/ilandroxxy" target="_blank" rel="noopener noreferrer">Написать Илье <span aria-hidden="true">↗</span></a></div>
+            </article>
+          </div>
         </div>
       </section>
 
@@ -645,11 +814,7 @@ export default function HomeClient() {
         <div className="pricing-heading">
           <div className="section-heading">
             <p className="section-kicker">Форматы и стоимость</p>
-            <h2>
-              Подбери подготовку
-              <br />
-              под себя
-            </h2>
+            <h2>Подбери подготовку под себя</h2>
           </div>
           <p>
             Выберите цель и формат. Точную стоимость я назову после короткого
@@ -723,78 +888,74 @@ export default function HomeClient() {
       </section>
 
       <section className="trial-section section" id="trial">
-        <div className="trial-intro">
+        <div className="trial-heading">
           <p className="section-kicker">Первый шаг</p>
-          <h2>Встретимся и всё обсудим.</h2>
+          <h2>Начнём с бесплатного занятия</h2>
           <p>
-            На пробном занятии познакомимся, обсудим цель и наметим первые шаги подготовки.
+            За 60 минут познакомимся, попробуем решать задачи вместе и наметим
+            маршрут к твоей цели. Можно прийти с родителем.
           </p>
         </div>
-
-        <div className="planerka-booking-card">
-          <div className="planerka-booking-meta">
-            <span>Пробное занятие</span>
-            <span>60 минут · онлайн</span>
+        <div className="trial-intro">
+          <ol className="trial-agenda" aria-label="Как проходит пробное занятие">
+            <li>
+              <span className="trial-step-number" aria-hidden="true">01</span>
+              <span className="trial-step-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20 11a8 8 0 0 1-8 8H5l-3 3V11a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8Z" /><path d="M7 9h8M7 13h5" /></svg>
+              </span>
+              <div><h3>Познакомимся</h3><p>Определим стартовый уровень, обсудим цель и то, что пока вызывает трудности.</p></div>
+            </li>
+            <li>
+              <span className="trial-step-number" aria-hidden="true">02</span>
+              <span className="trial-step-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="15" rx="3" /><path d="m6 9 3 3-3 3M12 15h5M8 22h8M12 19v3" /></svg>
+              </span>
+              <div><h3>Попробуем вместе</h3><p>Разберём несколько задач — ты увидишь, как я объясняю, и оценишь мой подход.</p></div>
+            </li>
+            <li>
+              <span className="trial-step-number" aria-hidden="true">03</span>
+              <span className="trial-step-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="5" cy="19" r="2" /><circle cx="19" cy="5" r="2" /><path d="M7 19h9a4 4 0 0 0 0-8H8a4 4 0 0 1 0-8h5M15 1l3 2-3 2" /></svg>
+              </span>
+              <div><h3>Соберём план подготовки</h3><p>Выберем первые темы, темп и формат занятий — с учётом твоего уровня и времени до экзамена.</p></div>
+            </li>
+          </ol>
+          <div className="trial-outcome">
+            <h3>После встречи будет понятнее</h3>
+            <ul>
+              <li><strong>Ученику</strong><span>С чего начать, над чем работать и комфортно ли заниматься со мной.</span></li>
+              <li><strong>Родителю</strong><span>Какой план и формат подойдут, как будут устроены занятия и обратная связь.</span></li>
+            </ul>
           </div>
-          <h3>Выбери удобное время</h3>
-          <p>В календаре показаны свободные часы в твоём часовом поясе.</p>
-          <a
-            className="planerka-booking-button"
-            href="https://planerka.app/ilandroxy/first-lesson"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(event) => {
-              if (bookingDialogRef.current?.showModal) {
-                event.preventDefault();
-                setBookingFrameLoaded(false);
-                setBookingLoadSlow(false);
-                setBookingOpen(true);
-                bookingDialogRef.current.showModal();
-              }
-            }}
-          >
-            Открыть календарь <span aria-hidden="true">↗</span>
-          </a>
-          <span className="planerka-booking-footnote">Запись подтвердится в Планёрке</span>
         </div>
-        <dialog
-          className="planerka-booking-dialog"
-          ref={bookingDialogRef}
-          onClose={() => setBookingOpen(false)}
-          aria-label="Запись на пробное занятие"
-        >
-          <div className="planerka-booking-dialog-header">
-            <strong>Пробное занятие · 60 минут</strong>
-            <a href="https://planerka.app/ilandroxy/first-lesson">
-              Открыть отдельно ↗
-            </a>
-            <button type="button" onClick={() => bookingDialogRef.current?.close()} aria-label="Закрыть календарь">×</button>
-          </div>
-          {bookingOpen && (
-            <iframe
-              title="Календарь записи на пробное занятие в Планёрке"
-              src="https://planerka.app/ilandroxy/first-lesson?embed=1"
-              onLoad={() => setBookingFrameLoaded(true)}
-            />
-          )}
-          {bookingLoadSlow && !bookingFrameLoaded && (
-            <div className="planerka-booking-dialog-help" role="status">
-              <strong>Календарь долго загружается</strong>
-              <p>Можно выбрать время прямо на странице Планёрки.</p>
-              <a href="https://planerka.app/ilandroxy/first-lesson">Перейти к записи ↗</a>
+
+        <div className="trial-booking">
+          <div className="planerka-inline-calendar" ref={bookingViewportRef}>
+            <div className="planerka-calendar-viewport" style={{ width: 520 * bookingScale, height: 520 * bookingScale }}>
+              <div className="planerka-calendar-surface" style={{ transform: `scale(${bookingScale})` }}>
+                <iframe
+                  ref={bookingFrameRef}
+                  id="trial-calendar"
+                  title="Календарь записи на пробное занятие в Планёрке"
+                  src="https://planerka.app/meet/ilandroxy/first-lesson?embed=1&embed_bg=transparent&embed_border_width=0&embed_shadow=none"
+                  loading="lazy"
+                  onLoad={() => bookingFrameRef.current?.contentWindow?.postMessage({ type: "planerka:init", frameId: "trial-calendar" }, "https://planerka.app")}
+                />
+              </div>
             </div>
-          )}
-        </dialog>
+          </div>
+          <div className="planerka-calendar-actions">
+            <a className="planerka-open-separately" href="https://planerka.app/ilandroxy/first-lesson" target="_blank" rel="noopener noreferrer">
+              Открыть отдельно <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
       </section>
       <section className="faq-section section" id="faq">
         <div className="faq-heading">
           <div className="section-heading">
             <p className="section-kicker">FAQ</p>
-            <h2>
-              Часто спрашивают.
-              <br />
-              Отвечаю по делу
-            </h2>
+            <h2>Часто спрашивают. Отвечаю по делу</h2>
           </div>
           <div className="faq-symbol">?</div>
         </div>

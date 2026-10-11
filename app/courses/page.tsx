@@ -64,7 +64,7 @@ export default function CoursesPage() {
         ))}
       </section>
 
-      <section className="courses-contact">
+      <section className="courses-contact" id="help">
         <div><p className="section-kicker">Если нужна помощь</p><h2>Хочешь заниматься вместе?</h2><p>Разберём твою цель и подберём формат занятий.</p></div>
         <Link href="/#trial">Заниматься со мной ↗</Link>
       </section>
